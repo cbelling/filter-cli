@@ -3,7 +3,7 @@ const os = require('os');
 const path = require('path');
 
 const DEFAULT_PROFILE = 'default';
-const DEFAULT_BASE_URL = 'http://localhost:3000';
+const DEFAULT_BASE_URL = 'https://getfilter.ai';
 
 function getConfigDir(env = process.env) {
   const xdg = typeof env.XDG_CONFIG_HOME === 'string' ? env.XDG_CONFIG_HOME.trim() : '';
