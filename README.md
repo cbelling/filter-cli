@@ -2,6 +2,8 @@
 
 Command-line client for the [Filter](https://getfilter.ai) API. Lets agents and scripts query and mutate a user's Filter account over HTTP.
 
+📖 **Docs:** [getfilter.ai/docs](https://getfilter.ai/docs)
+
 ```bash
 npm install -g filter-cli
 
