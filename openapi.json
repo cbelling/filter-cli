@@ -1,0 +1,4001 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Filter API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/api/v1/feed": {
+      "get": {
+        "operationId": "listFeedItems",
+        "summary": "List feed items with filtering, sorting, and pagination",
+        "tags": [
+          "Feed"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "perPage",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "read",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "saved",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "connectorId",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of feed items"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}": {
+      "get": {
+        "operationId": "getFeedItem",
+        "summary": "Get a single feed item by ID",
+        "tags": [
+          "Feed"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Feed item details"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/reader": {
+      "get": {
+        "operationId": "getItemReader",
+        "summary": "Get or build the reader article for a feed item",
+        "tags": [
+          "Feed"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reader article content"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/read": {
+      "post": {
+        "operationId": "markFeedItemRead",
+        "summary": "Mark a feed item as read",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item marked as read"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/unread": {
+      "post": {
+        "operationId": "markFeedItemUnread",
+        "summary": "Mark a feed item as unread",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item marked as unread"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/save": {
+      "post": {
+        "operationId": "saveFeedItem",
+        "summary": "Save a feed item (also marks as read)",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item saved"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/unsave": {
+      "post": {
+        "operationId": "unsaveFeedItem",
+        "summary": "Remove save from a feed item",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item unsaved"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/archive": {
+      "post": {
+        "operationId": "archiveFeedItem",
+        "summary": "Archive a feed item",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item archived"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/unarchive": {
+      "post": {
+        "operationId": "unarchiveFeedItem",
+        "summary": "Unarchive a feed item",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item unarchived"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/library": {
+      "post": {
+        "operationId": "addToLibrary",
+        "summary": "Add a feed item to the library",
+        "tags": [
+          "Library"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item added to library"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeFromLibrary",
+        "summary": "Remove a feed item from the library",
+        "tags": [
+          "Library"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item removed from library"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/unlibrary": {
+      "post": {
+        "operationId": "removeFeedItemFromLibraryAction",
+        "summary": "Remove a feed item from the library (loop action)",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item removed from library"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/like": {
+      "post": {
+        "operationId": "likeFeedItem",
+        "summary": "Like a feed item (clears dislike, marks as read)",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item liked"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/unlike": {
+      "post": {
+        "operationId": "unlikeFeedItem",
+        "summary": "Remove like from a feed item",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Like removed"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/dislike": {
+      "post": {
+        "operationId": "dislikeFeedItem",
+        "summary": "Dislike a feed item (clears like, marks as read)",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item disliked"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/undislike": {
+      "post": {
+        "operationId": "undislikeFeedItem",
+        "summary": "Remove dislike from a feed item",
+        "tags": [
+          "Feed Actions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dislike removed"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/bulk-seen": {
+      "post": {
+        "operationId": "bulkMarkSeen",
+        "summary": "Mark multiple feed items as read",
+        "tags": [
+          "Feed Actions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "item_ids"
+                ],
+                "properties": {
+                  "item_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Number of items affected"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/mark-all-seen": {
+      "post": {
+        "operationId": "markAllFeedItemsSeen",
+        "summary": "Mark all unseen feed items as seen, optionally filtered by view or source",
+        "tags": [
+          "Feed Actions"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "view_id": {
+                    "type": "integer"
+                  },
+                  "source": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Number of items affected"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/bulk-save": {
+      "post": {
+        "operationId": "bulkSaveFeedItems",
+        "summary": "Save multiple feed items and mark as read",
+        "tags": [
+          "Feed Actions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "item_ids"
+                ],
+                "properties": {
+                  "item_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Number of items affected"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/bulk": {
+      "post": {
+        "operationId": "bulkUpdateFeedItems",
+        "summary": "Perform a bulk action on multiple feed items",
+        "tags": [
+          "Feed Actions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action",
+                  "ids"
+                ],
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "read",
+                      "unread",
+                      "save",
+                      "unsave",
+                      "archive",
+                      "unarchive",
+                      "library",
+                      "unlibrary"
+                    ]
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "maxItems": 200
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Number of items affected"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/add-url": {
+      "post": {
+        "operationId": "addFeedItemByUrl",
+        "summary": "Add a new feed item by URL (article, YouTube, or X post)",
+        "tags": [
+          "Feed"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "url"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Feed item created or already exists"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/topics": {
+      "get": {
+        "operationId": "listFeedItemTopics",
+        "summary": "List topics assigned to a feed item",
+        "tags": [
+          "Feed"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of topics for the feed item"
+          }
+        }
+      },
+      "post": {
+        "operationId": "replaceFeedItemTopics",
+        "summary": "Replace all topics assigned to a feed item",
+        "tags": [
+          "Feed"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "topicIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated list of topics for the feed item"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/tags": {
+      "patch": {
+        "operationId": "updateFeedItemTags",
+        "summary": "Add, remove, or replace topic tags on a feed item using tag names",
+        "tags": [
+          "Feed"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tags": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "set",
+                      "add",
+                      "remove"
+                    ]
+                  },
+                  "createUnknown": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated tag assignments for the feed item"
+          }
+        }
+      }
+    },
+    "/api/v1/highlights": {
+      "get": {
+        "operationId": "listHighlights",
+        "summary": "List all highlights for the current user",
+        "tags": [
+          "Highlights"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "topic",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "color",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "feedItemId",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of highlights"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/highlights": {
+      "get": {
+        "operationId": "listHighlightsForItem",
+        "summary": "List highlights for a specific feed item",
+        "tags": [
+          "Highlights"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of highlights for the feed item"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createHighlight",
+        "summary": "Create a highlight on a feed item",
+        "tags": [
+          "Highlights"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "quoteText",
+                  "startOffset",
+                  "endOffset"
+                ],
+                "properties": {
+                  "quoteText": {
+                    "type": "string"
+                  },
+                  "prefixText": {
+                    "type": "string"
+                  },
+                  "suffixText": {
+                    "type": "string"
+                  },
+                  "startOffset": {
+                    "type": "integer"
+                  },
+                  "endOffset": {
+                    "type": "integer"
+                  },
+                  "noteText": {
+                    "type": "string"
+                  },
+                  "topic": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created highlight"
+          }
+        }
+      }
+    },
+    "/api/v1/notes": {
+      "post": {
+        "operationId": "createStandaloneNote",
+        "summary": "Create a standalone note (not attached to a feed item)",
+        "tags": [
+          "Highlights"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "noteText"
+                ],
+                "properties": {
+                  "noteText": {
+                    "type": "string"
+                  },
+                  "topic": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created standalone note"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listNotes",
+        "summary": "List all notes for the current user",
+        "tags": [
+          "Notes"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "maximum": 200
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of notes"
+          }
+        }
+      }
+    },
+    "/api/v1/highlights/{id}": {
+      "patch": {
+        "operationId": "updateHighlight",
+        "summary": "Update a highlight's note, topic, or color",
+        "tags": [
+          "Highlights"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "noteText": {
+                    "type": "string"
+                  },
+                  "topic": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated highlight"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteHighlight",
+        "summary": "Delete a highlight",
+        "tags": [
+          "Highlights"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Highlight deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/note": {
+      "get": {
+        "operationId": "getItemNote",
+        "summary": "Get the note for a feed item",
+        "tags": [
+          "Notes"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note for the feed item (or null)"
+          }
+        }
+      },
+      "put": {
+        "operationId": "upsertItemNote",
+        "summary": "Create or update the note for a feed item",
+        "tags": [
+          "Notes"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "noteText"
+                ],
+                "properties": {
+                  "noteText": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upserted note"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteItemNote",
+        "summary": "Delete the note for a feed item",
+        "tags": [
+          "Notes"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/topics": {
+      "get": {
+        "operationId": "listTopics",
+        "summary": "List all topics for the current user",
+        "tags": [
+          "Topics"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of topics"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createTopic",
+        "summary": "Create a new topic",
+        "tags": [
+          "Topics"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "parentTopicId": {
+                    "type": "integer",
+                    "nullable": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 500,
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created topic"
+          }
+        }
+      }
+    },
+    "/api/v1/topics/{id}": {
+      "get": {
+        "operationId": "getTopic",
+        "summary": "Get a single topic by ID",
+        "tags": [
+          "Topics"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Topic details"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateTopic",
+        "summary": "Update a topic's name, parent, or description",
+        "tags": [
+          "Topics"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "parentTopicId": {
+                    "type": "integer",
+                    "nullable": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 500,
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated topic"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTopic",
+        "summary": "Delete a topic",
+        "tags": [
+          "Topics"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Topic deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/sources": {
+      "get": {
+        "operationId": "listSources",
+        "summary": "List all content sources (connectors) for the current user",
+        "tags": [
+          "Sources"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of sources with status and stats"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createSource",
+        "summary": "Create a new content source (connector)",
+        "tags": [
+          "Sources"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "source"
+                ],
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "x",
+                      "reddit",
+                      "rss",
+                      "podcast",
+                      "youtube"
+                    ]
+                  },
+                  "configKey": {
+                    "type": "string"
+                  },
+                  "configJson": {
+                    "type": "string"
+                  },
+                  "feedUrl": {
+                    "type": "string"
+                  },
+                  "youtubeUrl": {
+                    "type": "string"
+                  },
+                  "subreddits": {
+                    "type": "string"
+                  },
+                  "usernames": {
+                    "type": "string"
+                  },
+                  "podcastTitle": {
+                    "type": "string"
+                  },
+                  "enabled": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Source created"
+          }
+        }
+      }
+    },
+    "/api/v1/sources/import": {
+      "post": {
+        "operationId": "bulkImportSources",
+        "summary": "Bulk-import sources from a list of URLs",
+        "tags": [
+          "Sources"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sources"
+                ],
+                "properties": {
+                  "sources": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "url"
+                      ],
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import results"
+          }
+        }
+      }
+    },
+    "/api/v1/sources/import/opml": {
+      "post": {
+        "operationId": "bulkImportSourcesOpml",
+        "summary": "Bulk-import sources from an OPML file",
+        "tags": [
+          "Sources"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "text/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import results"
+          }
+        }
+      }
+    },
+    "/api/v1/sources/{id}": {
+      "patch": {
+        "operationId": "updateSource",
+        "summary": "Update a source's config or enabled state",
+        "tags": [
+          "Sources"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "configJson": {
+                    "type": "string"
+                  },
+                  "enabled": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Source updated"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteSource",
+        "summary": "Delete a source and its ingestion data",
+        "tags": [
+          "Sources"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/sources/{id}/pause": {
+      "post": {
+        "operationId": "pauseSource",
+        "summary": "Pause a source (disable ingestion)",
+        "tags": [
+          "Sources"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source paused"
+          }
+        }
+      }
+    },
+    "/api/v1/sources/{id}/resume": {
+      "post": {
+        "operationId": "resumeSource",
+        "summary": "Resume a paused source (enable ingestion)",
+        "tags": [
+          "Sources"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source resumed"
+          }
+        }
+      }
+    },
+    "/api/v1/sources/{id}/sync": {
+      "post": {
+        "operationId": "syncSource",
+        "summary": "Trigger manual ingestion sync for a source",
+        "tags": [
+          "Sources"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync result"
+          }
+        }
+      }
+    },
+    "/api/v1/sources/{id}/items": {
+      "get": {
+        "operationId": "listSourceItems",
+        "summary": "List feed items from a specific source",
+        "tags": [
+          "Sources"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated feed items for the source"
+          }
+        }
+      }
+    },
+    "/api/v1/sources/{id}/test": {
+      "post": {
+        "operationId": "testSource",
+        "summary": "Test connection for a source",
+        "tags": [
+          "Sources"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Test result"
+          }
+        }
+      }
+    },
+    "/api/v1/observability": {
+      "get": {
+        "operationId": "getObservability",
+        "summary": "Get ingestion observability data (recent jobs, errors, alerts)",
+        "tags": [
+          "Observability"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "hours",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 168
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Observability dashboard data"
+          }
+        }
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "operationId": "getCurrentUser",
+        "summary": "Get the current authenticated user's profile",
+        "tags": [
+          "Account"
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateCurrentUser",
+        "summary": "Update the current user's display name or email",
+        "tags": [
+          "Account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "displayName": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user profile"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteAccount",
+        "summary": "Permanently delete the current user's account and all data",
+        "tags": [
+          "Account"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "confirmation"
+                ],
+                "properties": {
+                  "confirmation": {
+                    "type": "string",
+                    "description": "Must be \"delete my account\""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/me/password": {
+      "patch": {
+        "operationId": "updatePassword",
+        "summary": "Change the current user's password",
+        "tags": [
+          "Account"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "currentPassword",
+                  "newPassword"
+                ],
+                "properties": {
+                  "currentPassword": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated"
+          }
+        }
+      }
+    },
+    "/api/v1/proxy/image": {
+      "get": {
+        "operationId": "proxyImage",
+        "summary": "Proxy an HTTP image over HTTPS (for iOS ATS compliance)",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "url",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proxied image bytes"
+          }
+        }
+      }
+    },
+    "/api/v1/devices": {
+      "post": {
+        "operationId": "registerDevice",
+        "summary": "Register a device for push notifications (APNs)",
+        "tags": [
+          "Devices"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "deviceToken"
+                ],
+                "properties": {
+                  "deviceToken": {
+                    "type": "string"
+                  },
+                  "platform": {
+                    "type": "string"
+                  },
+                  "bundleId": {
+                    "type": "string"
+                  },
+                  "environment": {
+                    "type": "string",
+                    "enum": [
+                      "production",
+                      "sandbox"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Device registered"
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}": {
+      "delete": {
+        "operationId": "deleteDevice",
+        "summary": "Remove a device registration",
+        "tags": [
+          "Devices"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device registration deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/views": {
+      "get": {
+        "operationId": "listViews",
+        "summary": "List all views for the current user",
+        "tags": [
+          "Views"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of views"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createView",
+        "summary": "Create a new view with filter configuration",
+        "tags": [
+          "Views"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "icon": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  },
+                  "topicIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "topicNames": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "connectorIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "webSearchEnabled": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created view"
+          }
+        }
+      }
+    },
+    "/api/v1/views/{id}": {
+      "get": {
+        "operationId": "getView",
+        "summary": "Get a single view by ID",
+        "tags": [
+          "Views"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "View details"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateView",
+        "summary": "Update a view's configuration",
+        "tags": [
+          "Views"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "icon": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "paused",
+                      "archived"
+                    ]
+                  },
+                  "webSearchEnabled": {
+                    "type": "boolean"
+                  },
+                  "topicIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "connectorIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated view"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteView",
+        "summary": "Delete a view",
+        "tags": [
+          "Views"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "View deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/views/{id}/pin": {
+      "post": {
+        "operationId": "pinView",
+        "summary": "Pin or unpin a view",
+        "tags": [
+          "Views"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "isPinned": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "View pin state updated"
+          }
+        }
+      }
+    },
+    "/api/v1/views/reorder": {
+      "post": {
+        "operationId": "reorderViews",
+        "summary": "Reorder views by providing an ordered list of view IDs",
+        "tags": [
+          "Views"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "viewIds"
+                ],
+                "properties": {
+                  "viewIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Views reordered"
+          }
+        }
+      }
+    },
+    "/api/v1/views/{id}/feed": {
+      "get": {
+        "operationId": "getViewFeed",
+        "summary": "Get feed items filtered by a view's configuration",
+        "tags": [
+          "Views"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "read",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated feed items for the view"
+          }
+        }
+      }
+    },
+    "/api/v1/library": {
+      "get": {
+        "operationId": "listLibraryItems",
+        "summary": "List feed items saved to the library",
+        "tags": [
+          "Library"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated library items"
+          }
+        }
+      }
+    },
+    "/api/v1/reports": {
+      "get": {
+        "operationId": "listReports",
+        "summary": "List reports for the current user",
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "viewId",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reportType",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of reports"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createReport",
+        "summary": "Create a new report",
+        "tags": [
+          "Reports"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "viewId": {
+                    "type": "integer"
+                  },
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "reportType": {
+                    "type": "string",
+                    "enum": [
+                      "ad_hoc",
+                      "scheduled",
+                      "event_driven",
+                      "highlight_driven"
+                    ]
+                  },
+                  "scheduleCron": {
+                    "type": "string"
+                  },
+                  "tone": {
+                    "type": "string",
+                    "enum": [
+                      "concise",
+                      "detailed",
+                      "executive",
+                      "research"
+                    ]
+                  },
+                  "webSearchEnabled": {
+                    "type": "boolean"
+                  },
+                  "feedItemIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "highlightIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created report"
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{id}": {
+      "get": {
+        "operationId": "getReport",
+        "summary": "Get a single report by ID",
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report details"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateReport",
+        "summary": "Update a report's settings",
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "reportType": {
+                    "type": "string",
+                    "enum": [
+                      "ad_hoc",
+                      "scheduled",
+                      "event_driven",
+                      "highlight_driven"
+                    ]
+                  },
+                  "scheduleCron": {
+                    "type": "string"
+                  },
+                  "tone": {
+                    "type": "string",
+                    "enum": [
+                      "concise",
+                      "detailed",
+                      "executive",
+                      "research"
+                    ]
+                  },
+                  "webSearchEnabled": {
+                    "type": "boolean"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "draft",
+                      "ready",
+                      "failed"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated report"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteReport",
+        "summary": "Delete a report",
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{id}/generate": {
+      "post": {
+        "operationId": "generateReport",
+        "summary": "Generate AI content for a report",
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generated report content"
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{id}/items": {
+      "post": {
+        "operationId": "addItemsToReport",
+        "summary": "Add feed items or highlights to a report",
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "feedItemIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "highlightIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Items added to report"
+          }
+        }
+      }
+    },
+    "/api/v1/export": {
+      "post": {
+        "operationId": "exportData",
+        "summary": "Export user data (highlights, reports, feed items, sources, views, knowledge)",
+        "tags": [
+          "Export"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "dataType"
+                ],
+                "properties": {
+                  "dataType": {
+                    "type": "string",
+                    "enum": [
+                      "highlights",
+                      "reports",
+                      "feed_items",
+                      "sources",
+                      "views",
+                      "knowledge"
+                    ]
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "json",
+                      "csv",
+                      "markdown"
+                    ]
+                  },
+                  "topicFilter": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "topicId": {
+                    "type": "integer"
+                  },
+                  "dateFrom": {
+                    "type": "string"
+                  },
+                  "dateTo": {
+                    "type": "string"
+                  },
+                  "reportIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Exported data file"
+          }
+        }
+      }
+    },
+    "/api/v1/export/syncs": {
+      "get": {
+        "operationId": "listExportSyncs",
+        "summary": "List all export sync integrations",
+        "tags": [
+          "Export Syncs"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of export sync configurations"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createExportSync",
+        "summary": "Create a new export sync integration",
+        "tags": [
+          "Export Syncs"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "integration",
+                  "dataTypes"
+                ],
+                "properties": {
+                  "integration": {
+                    "type": "string",
+                    "enum": [
+                      "obsidian",
+                      "notion",
+                      "readwise",
+                      "webhook"
+                    ]
+                  },
+                  "configJson": {
+                    "type": "object"
+                  },
+                  "dataTypes": {
+                    "type": "string"
+                  },
+                  "cadence": {
+                    "type": "string",
+                    "enum": [
+                      "realtime",
+                      "daily",
+                      "weekly"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created export sync"
+          }
+        }
+      }
+    },
+    "/api/v1/export/syncs/{id}": {
+      "patch": {
+        "operationId": "updateExportSync",
+        "summary": "Update an export sync configuration",
+        "tags": [
+          "Export Syncs"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "configJson": {
+                    "type": "object"
+                  },
+                  "dataTypes": {
+                    "type": "string"
+                  },
+                  "cadence": {
+                    "type": "string",
+                    "enum": [
+                      "realtime",
+                      "daily",
+                      "weekly"
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "paused"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated export sync"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteExportSync",
+        "summary": "Delete an export sync integration",
+        "tags": [
+          "Export Syncs"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Export sync deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/export/syncs/{id}/run": {
+      "post": {
+        "operationId": "runExportSync",
+        "summary": "Trigger an export sync run manually",
+        "tags": [
+          "Export Syncs"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync run result"
+          }
+        }
+      }
+    },
+    "/api/v1/billing": {
+      "get": {
+        "operationId": "getBilling",
+        "summary": "Get billing and credit usage summary",
+        "tags": [
+          "Billing"
+        ],
+        "responses": {
+          "200": {
+            "description": "Billing and credits summary"
+          }
+        }
+      }
+    },
+    "/api/v1/billing/upgrade": {
+      "post": {
+        "operationId": "upgradePlan",
+        "summary": "Upgrade or change the user's billing plan",
+        "tags": [
+          "Billing"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "plan"
+                ],
+                "properties": {
+                  "plan": {
+                    "type": "string",
+                    "enum": [
+                      "free",
+                      "pro"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plan updated with new usage summary"
+          }
+        }
+      }
+    },
+    "/api/v1/usage/ai": {
+      "get": {
+        "operationId": "getAiUsage",
+        "summary": "Get AI token usage and cost summary",
+        "tags": [
+          "Billing"
+        ],
+        "responses": {
+          "200": {
+            "description": "AI usage summary with totals, breakdown by operation, and recent log entries"
+          }
+        }
+      }
+    },
+    "/api/v1/ai/discover-sources": {
+      "post": {
+        "operationId": "discoverSources",
+        "summary": "Extract candidate feed sources from free text and optional screenshots",
+        "tags": [
+          "AI"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Discovered source candidates"
+          }
+        }
+      }
+    },
+    "/api/v1/ai/parse-filter": {
+      "post": {
+        "operationId": "parseFilterIntent",
+        "summary": "Parse natural language into structured feed filter parameters",
+        "tags": [
+          "AI"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "text"
+                ],
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Parsed filter intent"
+          }
+        }
+      }
+    },
+    "/api/v1/ai/web-search": {
+      "post": {
+        "operationId": "webSearch",
+        "summary": "Run a web search for up-to-date information with citations",
+        "tags": [
+          "AI"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "query"
+                ],
+                "properties": {
+                  "query": {
+                    "type": "string"
+                  },
+                  "allowedDomains": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "blockedDomains": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "maxUses": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Search results and synthesized answer"
+          }
+        }
+      }
+    },
+    "/api/v1/context/search": {
+      "get": {
+        "operationId": "searchContext",
+        "summary": "Search across feed items, highlights, sources, views, and reports for @-mention context",
+        "tags": [
+          "Chat"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional search query. When empty, returns recent items."
+          },
+          {
+            "in": "query",
+            "name": "types",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated list of types to search (feed_item, highlight, source, view, report). Defaults to all."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "description": "Max results per type (default 5, max 10)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results grouped by type"
+          }
+        }
+      }
+    },
+    "/api/v1/chat/threads": {
+      "get": {
+        "operationId": "listChatThreads",
+        "summary": "List chat threads for the current user",
+        "tags": [
+          "Chat"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "includeArchived",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of chat threads"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createChatThread",
+        "summary": "Create a new chat thread",
+        "tags": [
+          "Chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 200
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created chat thread"
+          }
+        }
+      }
+    },
+    "/api/v1/chat/threads/{threadId}": {
+      "get": {
+        "operationId": "getChatThread",
+        "summary": "Get a single chat thread by ID",
+        "tags": [
+          "Chat"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "threadId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat thread details"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateChatThread",
+        "summary": "Update a chat thread's title",
+        "tags": [
+          "Chat"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "threadId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 200
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated chat thread"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteChatThread",
+        "summary": "Delete or archive a chat thread",
+        "tags": [
+          "Chat"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "threadId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "hard",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1"
+              ]
+            },
+            "description": "Set to 1 for permanent delete, otherwise archives"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thread deleted or archived"
+          }
+        }
+      }
+    },
+    "/api/v1/chat/threads/{threadId}/archive": {
+      "post": {
+        "operationId": "archiveChatThread",
+        "summary": "Archive a chat thread",
+        "tags": [
+          "Chat"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "threadId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Archived chat thread"
+          }
+        }
+      }
+    },
+    "/api/v1/chat/threads/{threadId}/messages": {
+      "get": {
+        "operationId": "listChatMessages",
+        "summary": "Get messages in a chat thread",
+        "tags": [
+          "Chat"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "threadId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "maximum": 500
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of messages in the thread"
+          }
+        }
+      }
+    },
+    "/api/v1/chat/tool-calls/{id}": {
+      "post": {
+        "operationId": "resolveChatToolCall",
+        "summary": "Approve or deny a pending chat tool call",
+        "tags": [
+          "Chat"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "decision"
+                ],
+                "properties": {
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "deny"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tool call resolution result"
+          }
+        }
+      }
+    },
+    "/api/v1/chat/stream": {
+      "post": {
+        "operationId": "streamChat",
+        "summary": "Send a message and receive streaming SSE response from the chat agent",
+        "tags": [
+          "Chat"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "message"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "threadId": {
+                    "type": "integer"
+                  },
+                  "history": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "assistant"
+                          ]
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "pageContext": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      },
+                      "search": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Server-Sent Events stream with chat response"
+          }
+        }
+      }
+    },
+    "/api/v1/podcasts/search": {
+      "get": {
+        "operationId": "searchPodcasts",
+        "summary": "Search for podcasts via iTunes",
+        "tags": [
+          "Podcasts"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search term"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of matching podcasts"
+          }
+        }
+      }
+    },
+    "/api/v1/reddit/search": {
+      "get": {
+        "operationId": "searchSubreddits",
+        "summary": "Search for subreddits via Reddit",
+        "tags": [
+          "Reddit"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search term"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of matching subreddits"
+          }
+        }
+      }
+    },
+    "/api/v1/x/search": {
+      "get": {
+        "operationId": "searchXUsers",
+        "summary": "Look up X/Twitter users by username",
+        "tags": [
+          "X"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated list of usernames (@ prefixes are stripped)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of matching X/Twitter users"
+          }
+        }
+      }
+    },
+    "/api/v1/youtube/search": {
+      "get": {
+        "operationId": "searchYouTubeChannels",
+        "summary": "Search for YouTube channels via YouTube Data API",
+        "tags": [
+          "YouTube"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search term"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of matching YouTube channels"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/podcast-transcript": {
+      "get": {
+        "operationId": "getPodcastTranscript",
+        "summary": "Get or generate the podcast transcript for a feed item",
+        "tags": [
+          "Transcripts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "force",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "transcribe",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Podcast transcript data"
+          },
+          "202": {
+            "description": "Transcript generation is pending"
+          }
+        }
+      }
+    },
+    "/api/v1/feed/{id}/youtube-transcript": {
+      "get": {
+        "operationId": "getYouTubeTranscript",
+        "summary": "Get or generate the YouTube transcript for a feed item",
+        "tags": [
+          "Transcripts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "force",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "YouTube transcript data"
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge-graph/entities": {
+      "get": {
+        "operationId": "listKgEntities",
+        "summary": "List knowledge graph entities for the current user",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sourceItemId",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of entities"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createKgEntity",
+        "summary": "Create a knowledge graph entity",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object"
+                  },
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "sourceItemId": {
+                    "type": "integer"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "proposed",
+                      "committed",
+                      "rejected"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created entity"
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge-graph/entities/{id}": {
+      "patch": {
+        "operationId": "updateKgEntity",
+        "summary": "Update a knowledge graph entity",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object"
+                  },
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "proposed",
+                      "committed",
+                      "rejected"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated entity"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteKgEntity",
+        "summary": "Delete a knowledge graph entity and its edges",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entity deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge-graph/edges": {
+      "get": {
+        "operationId": "listKgEdges",
+        "summary": "List knowledge graph edges for the current user",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "entityId",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sourceItemId",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of edges"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createKgEdge",
+        "summary": "Create a knowledge graph edge between two entities",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sourceEntityId",
+                  "targetEntityId",
+                  "relationship"
+                ],
+                "properties": {
+                  "sourceEntityId": {
+                    "type": "integer"
+                  },
+                  "targetEntityId": {
+                    "type": "integer"
+                  },
+                  "relationship": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "sourceItemId": {
+                    "type": "integer"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "proposed",
+                      "committed",
+                      "rejected"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created edge"
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge-graph/edges/{id}": {
+      "patch": {
+        "operationId": "updateKgEdge",
+        "summary": "Update a knowledge graph edge",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "relationship": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "proposed",
+                      "committed",
+                      "rejected"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated edge"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteKgEdge",
+        "summary": "Delete a knowledge graph edge",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Edge deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge-graph/items/{feedItemId}/proposals": {
+      "get": {
+        "operationId": "getItemProposals",
+        "summary": "Get proposed entities and edges for a feed item",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "feedItemId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proposed entities and edges for the item"
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge-graph/items/{feedItemId}/extract": {
+      "post": {
+        "operationId": "triggerKgExtraction",
+        "summary": "Trigger knowledge graph extraction for a feed item",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "parameters": [
+          {
+            "name": "feedItemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Extraction started"
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge-graph/items/{feedItemId}/graph": {
+      "get": {
+        "operationId": "getItemGraphWithConnections",
+        "summary": "Get item-level graph with global connection counts",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "parameters": [
+          {
+            "name": "feedItemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item graph with entities, edges, and global connection counts"
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge-graph": {
+      "get": {
+        "operationId": "getKnowledgeGraph",
+        "summary": "Get the full committed knowledge graph for the current user",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "responses": {
+          "200": {
+            "description": "Full knowledge graph with committed entities and edges"
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge-graph/extract-statement": {
+      "post": {
+        "operationId": "extractStatementTriple",
+        "summary": "Extract a knowledge graph triple from a natural language sentence",
+        "tags": [
+          "KnowledgeGraph"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sentence"
+                ],
+                "properties": {
+                  "sentence": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Extracted triple"
+          },
+          "400": {
+            "description": "Missing or invalid sentence"
+          },
+          "422": {
+            "description": "Could not extract triple"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "loginApiToken",
+        "summary": "Create a bearer token using email and password",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "deviceName": {
+                    "type": "string"
+                  },
+                  "platform": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Issued bearer token"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "logoutApiToken",
+        "summary": "Revoke the current bearer token",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Token revoked"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "refreshApiToken",
+        "summary": "Revoke the current bearer token and issue a new one",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Refreshed bearer token"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "getAuthUser",
+        "summary": "Get the authenticated API user for the current bearer token",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Authenticated user profile"
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
+}
