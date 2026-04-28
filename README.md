@@ -148,7 +148,9 @@ node src/index.js catalog
 npm test
 ```
 
-The CLI ships a frozen `openapi.json` that defines its surface. To update it against the live API, copy from the [filter](https://github.com/cbelling/filter) repo's generator output.
+The CLI ships a frozen `openapi.json` that defines its public surface. The spec is trimmed to only the operations the CLI uses — endpoints not surfaced by any command are not included.
+
+To regenerate the spec against an updated API, run `scripts/build-spec.js` with a source spec on stdin or via `--source <path>`. The script fails if the source is missing any operation the CLI references.
 
 ## License
 
