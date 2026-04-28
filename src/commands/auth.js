@@ -1,22 +1,100 @@
 const { callOperation, CliError } = require('../client');
 const { saveProfile, clearProfileToken } = require('../config');
 const { option, requireString } = require('../helpers');
+const { prompt } = require('../prompt');
+
+const TOKEN_MIN_LENGTH = 32;
+
+function settingsUrl(baseUrl) {
+  const trimmed = String(baseUrl || '').replace(/\/+$/, '');
+  return `${trimmed}/settings/api-keys`;
+}
+
+async function loginWithToken({ context, token }) {
+  const validated = requireString(token, 'token');
+  if (validated.length < TOKEN_MIN_LENGTH) {
+    throw new CliError(
+      `Token looks too short (got ${validated.length} chars). Make sure you copied the full value.`,
+      { code: 'validation', exitCode: 2 }
+    );
+  }
+
+  // Verify the token by hitting /auth/me before persisting it.
+  const verifyContext = { ...context.runtime, token: validated };
+  const response = await callOperation({
+    operationId: 'getAuthUser',
+    context: verifyContext,
+  });
+
+  const saved = saveProfile(
+    context.runtime.profileName,
+    { token: validated, baseUrl: context.runtime.baseUrl },
+    context.env
+  );
+
+  return {
+    status: 'authenticated',
+    data: {
+      token: validated,
+      user: response.payload?.user || null,
+      profile: saved.profileName,
+      configPath: saved.configPath,
+    },
+  };
+}
+
+async function loginWithPassword({ context, values }) {
+  const response = await callOperation({
+    operationId: 'loginApiToken',
+    authRequired: false,
+    context: context.runtime,
+    request: {
+      body: {
+        email: requireString(values.email, 'email'),
+        password: requireString(values.password, 'password'),
+        deviceName: values['device-name'] || null,
+        platform: values.platform || 'cli',
+      },
+    },
+  });
+
+  const payload = response.payload || {};
+  const token = requireString(payload.token, 'token');
+  const saved = saveProfile(
+    context.runtime.profileName,
+    { token, baseUrl: context.runtime.baseUrl },
+    context.env
+  );
+
+  return {
+    status: 'authenticated',
+    data: {
+      token,
+      expiresAt: payload.expiresAt || null,
+      user: payload.user || null,
+      profile: saved.profileName,
+      configPath: saved.configPath,
+    },
+  };
+}
 
 module.exports = [
   {
     path: ['auth', 'login'],
-    operationId: 'loginApiToken',
-    description: 'Create and save a bearer token using email and password.',
+    description: 'Authenticate the CLI. Prompts for a token by default; --token or --email/--password also supported.',
     safety: 'auto',
-    usage: 'filter auth login --email <email> --password <password> [--device-name <name>] [--platform <platform>]',
+    usage: 'filter auth login [--token <token>] [--email <email> --password <password>] [--device-name <name>] [--platform <platform>]',
     examples: [
+      'filter auth login',
+      'filter auth login --token YOUR_TOKEN',
       'filter auth login --email you@example.com --password hunter2',
     ],
     args: [
-      { flag: '--email', required: true, description: 'Email address for password login.' },
-      { flag: '--password', required: true, description: 'Password for the account.' },
-      { flag: '--device-name', description: 'Optional device label stored with the token.' },
-      { flag: '--platform', description: 'Optional platform label stored with the token.' },
+      { flag: '--token', description: 'Bearer token to save (skips the interactive prompt). Also a global flag.' },
+      { flag: '--email', description: 'Email address for password login (power-user fallback).' },
+      { flag: '--password', description: 'Password for email login.' },
+      { flag: '--device-name', description: 'Optional device label stored with the token (email login only).' },
+      { flag: '--platform', description: 'Optional platform label stored with the token (email login only).' },
     ],
     options: {
       email: option('string'),
@@ -25,38 +103,22 @@ module.exports = [
       platform: option('string'),
     },
     async handler(context, values) {
-      const response = await callOperation({
-        operationId: 'loginApiToken',
-        authRequired: false,
-        context: context.runtime,
-        request: {
-          body: {
-            email: requireString(values.email, 'email'),
-            password: requireString(values.password, 'password'),
-            deviceName: values['device-name'] || null,
-            platform: values.platform || 'cli',
-          },
-        },
-      });
+      // --token is a global flag, so it lands on context.runtime.token.
+      const passedToken = context.runtime.token;
+      if (passedToken) {
+        return loginWithToken({ context, token: passedToken });
+      }
 
-      const payload = response.payload || {};
-      const token = requireString(payload.token, 'token');
-      const saved = saveProfile(
-        context.runtime.profileName,
-        { token, baseUrl: context.runtime.baseUrl },
-        context.env
-      );
+      // Email/password: power-user fallback.
+      if (values.email || values.password) {
+        return loginWithPassword({ context, values });
+      }
 
-      return {
-        status: 'authenticated',
-        data: {
-          token,
-          expiresAt: payload.expiresAt || null,
-          user: payload.user || null,
-          profile: saved.profileName,
-          configPath: saved.configPath,
-        },
-      };
+      // Default: interactive token prompt. The blessed flow.
+      const url = settingsUrl(context.runtime.baseUrl);
+      process.stderr.write(`\nOpen ${url} to generate a token, then paste it here.\n`);
+      const pasted = await prompt('Token: ');
+      return loginWithToken({ context, token: pasted });
     },
   },
   {

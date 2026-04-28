@@ -33,15 +33,26 @@ npx filter-cli catalog
 
 ## Auth
 
+The recommended flow: generate a token from web settings, then paste it into the CLI.
+
 ```bash
-# Email + password — issues and saves a bearer token
-filter auth login --email you@example.com --password ...
+filter auth login
+# → prints the URL to generate a token
+# → prompts for the token, validates it, saves it
 
-# Or paste an existing token (e.g. from web settings)
-filter auth use-token --token YOUR_TOKEN
-
-# Verify
 filter auth whoami
+```
+
+Generate tokens at https://getfilter.ai/settings/api-keys.
+
+Other ways to authenticate:
+
+```bash
+# Pass a token non-interactively (for scripts / CI)
+filter auth login --token YOUR_TOKEN
+
+# Email + password (power-user fallback)
+filter auth login --email you@example.com --password ...
 ```
 
 Profiles are saved at `$XDG_CONFIG_HOME/filter/config.json` (or `~/.config/filter/config.json`).
