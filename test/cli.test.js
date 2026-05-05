@@ -40,7 +40,7 @@ function createJsonResponse(status, payload) {
   };
 }
 
-async function runCli(args, { env, fetchImpl }) {
+async function runCli(args, { env, fetchImpl, stdin = process.stdin }) {
   const stdout = createBufferWriter();
   const stderr = createBufferWriter();
   const originalFetch = global.fetch;
@@ -50,6 +50,7 @@ async function runCli(args, { env, fetchImpl }) {
     const exitCode = await run(args, {
       stdout: stdout.stream,
       stderr: stderr.stream,
+      stdin,
       env,
     });
 
@@ -160,6 +161,10 @@ test('auth login, refresh, and logout manage the saved profile token', async () 
     { env, fetchImpl }
   );
   assert.equal(loginResult.exitCode, 0);
+  assert.doesNotMatch(loginResult.stdout, /token-one/);
+  const loginPayload = JSON.parse(loginResult.stdout);
+  assert.equal(loginPayload.data.tokenSaved, true);
+  assert.equal(loginPayload.data.profile, 'default');
 
   let config = readConfig(env);
   assert.equal(config.profiles.default.token, 'token-one');
@@ -169,6 +174,9 @@ test('auth login, refresh, and logout manage the saved profile token', async () 
 
   const refreshResult = await runCli(['auth', 'refresh'], { env, fetchImpl });
   assert.equal(refreshResult.exitCode, 0);
+  assert.doesNotMatch(refreshResult.stdout, /token-two/);
+  const refreshPayload = JSON.parse(refreshResult.stdout);
+  assert.equal(refreshPayload.data.tokenSaved, true);
   config = readConfig(env);
   assert.equal(config.profiles.default.token, 'token-two');
 
@@ -176,6 +184,52 @@ test('auth login, refresh, and logout manage the saved profile token', async () 
   assert.equal(logoutResult.exitCode, 0);
   config = readConfig(env);
   assert.equal(config.profiles.default.token, '');
+});
+
+test('auth login with a token saves without echoing the token', async () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'filter-cli-auth-token-'));
+  const token = 'filter_test_token_12345678901234567890';
+  const env = createEnv(tempDir);
+  const fetchImpl = createFetchQueue([
+    {
+      url: 'http://localhost:3000/api/auth/me',
+      method: 'GET',
+      assert(_url, options) {
+        assert.equal(options.headers.Authorization, `Bearer ${token}`);
+      },
+      payload: {
+        ok: true,
+        user: { id: 1, email: 'person@example.com' },
+      },
+    },
+  ]);
+
+  const result = await runCli(['auth', 'login', '--token', token], { env, fetchImpl });
+
+  assert.equal(result.exitCode, 0);
+  assert.doesNotMatch(result.stdout, new RegExp(token));
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.data.tokenSaved, true);
+  assert.equal(payload.data.user.email, 'person@example.com');
+  assert.equal(readConfig(env).profiles.default.token, token);
+});
+
+test('interactive auth prompt writes through injected stderr', async () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'filter-cli-auth-prompt-'));
+  const env = createEnv(tempDir);
+  const stdin = { isTTY: false };
+
+  const result = await runCli(['auth', 'login'], {
+    env,
+    stdin,
+    fetchImpl: async () => {
+      throw new Error('prompt failure should happen before fetch');
+    },
+  });
+
+  assert.equal(result.exitCode, 6);
+  assert.match(result.stderr, /Open http:\/\/localhost:3000\/settings\/api-keys/);
+  assert.match(result.stderr, /Cannot prompt for input/);
 });
 
 test('feed list passes query params and returns pagination metadata', async () => {
@@ -206,6 +260,35 @@ test('feed list passes query params and returns pagination metadata', async () =
   const payload = JSON.parse(result.stdout);
   assert.equal(payload.meta.pagination.total, 1);
   assert.equal(payload.data.items[0].id, 42);
+});
+
+test('invalid numeric options fail validation before fetching', async () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'filter-cli-validation-'));
+  const env = createEnv(tempDir, { FILTER_API_TOKEN: 'token-validation' });
+  const fetchImpl = async () => {
+    throw new Error('validation failures should not call fetch');
+  };
+
+  const badMaxUses = await runCli(['ai', 'web-search', '--query', 'latest ai news', '--max-uses', 'nope'], {
+    env,
+    fetchImpl,
+  });
+  assert.equal(badMaxUses.exitCode, 2);
+  assert.match(badMaxUses.stderr, /max-uses must be a positive integer/);
+
+  const tooManyUses = await runCli(['ai', 'web-search', '--query', 'latest ai news', '--max-uses', '9'], {
+    env,
+    fetchImpl,
+  });
+  assert.equal(tooManyUses.exitCode, 2);
+  assert.match(tooManyUses.stderr, /max-uses must be an integer between 1 and 8/);
+
+  const badPage = await runCli(['feed', 'list', '--page', 'abc'], {
+    env,
+    fetchImpl,
+  });
+  assert.equal(badPage.exitCode, 2);
+  assert.match(badPage.stderr, /page must be a positive integer/);
 });
 
 test('feed reader truncates by default and returns full content with --full', async () => {

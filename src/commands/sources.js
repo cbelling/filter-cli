@@ -2,6 +2,7 @@ const { callOperation, CliError } = require('../client');
 const {
   option,
   parseInteger,
+  parseOptionalInteger,
   requireString,
   ensureOneOf,
 } = require('../helpers');
@@ -53,7 +54,7 @@ module.exports = [
         request: {
           path: { id: sourceId },
           query: {
-            page: values.page,
+            page: parseOptionalInteger(values.page, 'page'),
             sort: values.sort,
             q: values.q,
             read: values.read,
