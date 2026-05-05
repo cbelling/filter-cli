@@ -11,6 +11,7 @@
   "homepage": "https://getfilter.ai/docs/cli",
   "bugs": "https://github.com/cbelling/filter-cli/issues",
   "type": "commonjs",
+  "packageManager": "npm@11.5.1",
   "main": "src/index.js",
   "bin": {
     "filter": "src/index.js"

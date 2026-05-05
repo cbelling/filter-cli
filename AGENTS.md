@@ -33,7 +33,7 @@ git checkout -b charles/fil-60-redact-auth-tokens
 
 ## CI
 
-CI should run on pull requests and pushes to `main`.
+CI is configured in `.github/workflows/ci.yml` and runs on pull requests and pushes to `main`.
 
 Expected checks:
 
@@ -42,13 +42,13 @@ npm test
 npm pack --dry-run
 ```
 
-When CI is added, prefer a Node matrix covering supported/current runtimes:
+The CI matrix covers supported/current runtimes:
 
 - Node 20
 - Node 22
 - Node 24
 
-If the workflow uses `npm ci`, commit a `package-lock.json`.
+The workflow uses `npm ci`, so `package-lock.json` must stay committed.
 
 ## Releases
 
@@ -70,13 +70,13 @@ Use the appropriate semver bump:
 - `npm version minor` for backward-compatible CLI additions
 - `npm version major` for breaking command/output changes
 
-Tags should use npm's default `vX.Y.Z` format. The publish workflow should trigger from `v*` tags.
+Tags should use npm's default `vX.Y.Z` format. The publish workflow in `.github/workflows/release.yml` triggers from `v*` tags and verifies that the tag matches `package.json` before publishing.
 
 ## npm Publishing
 
 Prefer npm Trusted Publishing through GitHub Actions OIDC instead of long-lived npm publish tokens.
 
-Recommended publish job:
+The publish job:
 
 - Runs on GitHub-hosted Ubuntu runners
 - Uses Node 24
