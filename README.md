@@ -1,8 +1,8 @@
-# filter-cli
+# Filter CLI
 
-Command-line client for the [Filter](https://getfilter.ai) API. Lets agents and scripts query and mutate a user's Filter account over HTTP.
+## Use the command line to manage your Filter workspace.
 
-📖 **Docs:** [getfilter.ai/docs](https://getfilter.ai/docs)
+The Filter CLI lets you read and update your Filter workspace from a terminal, script, or agent.
 
 ```bash
 npm install -g filter-cli
@@ -12,95 +12,75 @@ filter feed list --pretty
 filter feed save --id 1234 --confirm
 ```
 
-## What it is
-
-`filter` is a structured, API-backed CLI for Filter — built for agents first, humans second.
-
-- Talks to the authenticated HTTP API. No local DB access.
-- Emits JSON by default so agents can parse it reliably.
-- `--confirm` gates every state-changing command. No silent mutations.
-- Registry-driven: `filter catalog` returns the shipped command list as JSON, validated against a bundled OpenAPI spec.
-- Auth commands save tokens locally but never echo bearer tokens back to stdout.
-
 ## Install
 
 ```bash
 npm install -g filter-cli
 ```
 
-Or run without installing:
+Or run it without installing:
 
 ```bash
 npx filter-cli catalog
 ```
 
-## Auth
+## Log in
 
-The recommended flow: generate a token from web settings, then paste it into the CLI.
+Create an API token in the Filter app at:
+
+```text
+https://getfilter.ai/settings/api-keys
+```
+
+Then run:
 
 ```bash
 filter auth login
-# → prints the URL to generate a token
-# → prompts for the token, validates it, saves it
-
 filter auth whoami
 ```
 
-Generate tokens at https://getfilter.ai/settings/api-keys.
+`filter auth login` prints the token settings URL, prompts for your token, validates it, and saves it to your local config.
 
-Other ways to authenticate:
+You can also pass a token directly:
 
 ```bash
-# Pass a token non-interactively (for scripts / CI)
 filter auth login --token YOUR_TOKEN
-
-# Email + password (power-user fallback)
-filter auth login --email you@example.com --password ...
 ```
 
-Profiles are saved at `$XDG_CONFIG_HOME/filter/config.json` (or `~/.config/filter/config.json`).
+Tokens are saved at `$XDG_CONFIG_HOME/filter/config.json` or `~/.config/filter/config.json`. Auth commands do not print bearer tokens back to stdout.
 
-Resolution order: CLI flags > `FILTER_API_TOKEN` / `FILTER_API_BASE_URL` env vars > saved profile.
+## Usage
 
-Successful auth responses include safe metadata such as `tokenSaved`, `profile`, and `configPath`; they do not include the bearer token value.
-
-## Quick reference
+Installing the CLI provides access to the `filter` command.
 
 ```bash
-filter catalog                         # List all commands as JSON
-filter feed list --read unread         # Unread feed items
-filter feed reader --id 1234           # Read an article (preview)
-filter feed reader --id 1234 --full    # Read an article (full)
-filter feed save --id 1234 --confirm   # Save to library
-filter feed tags --id 1234 --tag AI --confirm
-filter highlights list --topic AI      # Highlights by topic
-filter sources list                    # Connected sources
-filter sources create --source rss --feed-url https://... --confirm
-filter library add --id 1234 --confirm # Add a feed item to the library
-filter views list                      # Custom views
-filter reports list                    # Generated reports
-filter ai web-search --query "latest AI news"
+filter [command]
+
+# Run --help for detailed information about CLI commands
+filter [command] --help
 ```
 
-Run `filter <command> --help` for full options on any command.
+## Commands
 
-## Global flags
+The Filter CLI supports commands for feed items, sources, views, reports, highlights, auth, and AI helpers. Below are some of the most used ones:
 
-| Flag | Purpose |
-|------|---------|
-| `--json` | Emit JSON (default) |
-| `--pretty` | Emit human-readable output |
-| `--base-url` | Override the API base URL |
-| `--token` | Override the bearer token for one call |
-| `--profile` | Select a saved profile |
-| `--timeout` | HTTP timeout in milliseconds |
-| `--confirm` | Allow confirm-gated write commands to execute |
-| `--full` | Request full content (not preview) where applicable |
-| `--help` | Command-specific help |
+- [auth login](https://getfilter.ai/docs#auth-login)
+- [auth whoami](https://getfilter.ai/docs#auth-whoami)
+- [feed list](https://getfilter.ai/docs#feed-list)
+- [feed reader](https://getfilter.ai/docs#feed-reader)
+- [feed save](https://getfilter.ai/docs#feed-save)
+- [feed tags](https://getfilter.ai/docs#feed-tags)
+- [highlights list](https://getfilter.ai/docs#highlights-list)
+- [sources list](https://getfilter.ai/docs#sources-list)
+- [sources create](https://getfilter.ai/docs#sources-create)
+- [views list](https://getfilter.ai/docs#views-list)
+- [reports list](https://getfilter.ai/docs#reports-list)
+- [ai web-search](https://getfilter.ai/docs#ai-web-search)
+- [catalog](https://getfilter.ai/docs#catalog)
 
-## JSON contract
+## Output
 
-Every command returns the same shape:
+The CLI returns JSON by default:
 
 ```json
 {
@@ -115,76 +95,22 @@ Every command returns the same shape:
 }
 ```
 
-`meta.pagination` appears on paginated lists. `meta.truncated` appears on preview commands.
-
-## Exit codes
-
-| Code | Meaning |
-|------|---------|
-| `0` | Success |
-| `2` | Validation failure |
-| `3` | Auth failure or missing token |
-| `4` | Not found |
-| `5` | Confirmation required |
-| `6` | Transport, timeout, or server failure |
-
-## Confirmation gating
-
-Write commands marked `confirm` never prompt interactively:
+Use `--pretty` for human-readable output.
 
 ```bash
-filter sources delete --id 5
-# → status: "pending_confirmation", exit code 5
-
-filter sources delete --id 5 --confirm
-# → executes
+filter feed list --pretty
 ```
 
-This makes the CLI safe to compose into scripts and agent workflows.
+## Documentation
 
-## Using with agents
+For a full reference, see the CLI reference site:
 
-Agents (Claude Code, Cursor, custom scripts) can call the CLI directly — no MCP server needed.
-
-`filter catalog` returns every shipped command as JSON, including `description`, `args`, `safety`, and `usage`. Agents should call `catalog` first to discover commands, then shell out to specific calls and parse the standard `{ ok, status, data, error, meta }` envelope.
-
-## Configuration
-
-| Env var | Purpose |
-|---------|---------|
-| `FILTER_API_TOKEN` | Bearer token for one-off calls without a saved profile |
-| `FILTER_API_BASE_URL` | Override the API base URL (default: `https://getfilter.ai`) |
-| `FILTER_OPENAPI_PATH` | Override the bundled OpenAPI spec (advanced) |
-
-## Development
-
-```bash
-git clone https://github.com/cbelling/filter-cli
-cd filter-cli
-npm ci
-npm test
-node src/index.js catalog
-npm pack --dry-run
+```text
+https://getfilter.ai/docs/cli
 ```
-
-The CLI ships a frozen `openapi.json` that defines its public surface. The spec is trimmed to only the operations the CLI uses — endpoints not surfaced by any command are not included.
-
-To regenerate the spec against an updated API, run `scripts/build-spec.js` with a source spec on stdin or via `--source <path>`. The script fails if the source is missing any operation the CLI references.
-
-## Releases
-
-Releases are published from `main` by pushing a version tag after the matching version bump has landed.
-
-```bash
-git checkout main
-git pull
-npm test
-git tag v0.1.2
-git push origin v0.1.2
-```
-
-The GitHub Actions release workflow publishes only on `v*` tags and verifies that the tag name matches `package.json` before running `npm publish`. Use npm Trusted Publishing for the package rather than long-lived npm tokens.
 
 ## License
 
-MIT
+Copyright (c) Austin Bellinger.
+
+Licensed under the MIT license.
