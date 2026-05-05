@@ -7,7 +7,7 @@ Command-line client for the [Filter](https://getfilter.ai) API. Lets agents and 
 ```bash
 npm install -g filter-cli
 
-filter auth login --email you@example.com --password ...
+filter auth login
 filter feed list --pretty
 filter feed save --id 1234 --confirm
 ```
@@ -20,6 +20,7 @@ filter feed save --id 1234 --confirm
 - Emits JSON by default so agents can parse it reliably.
 - `--confirm` gates every state-changing command. No silent mutations.
 - Registry-driven: `filter catalog` returns the shipped command list as JSON, validated against a bundled OpenAPI spec.
+- Auth commands save tokens locally but never echo bearer tokens back to stdout.
 
 ## Install
 
@@ -61,6 +62,8 @@ Profiles are saved at `$XDG_CONFIG_HOME/filter/config.json` (or `~/.config/filte
 
 Resolution order: CLI flags > `FILTER_API_TOKEN` / `FILTER_API_BASE_URL` env vars > saved profile.
 
+Successful auth responses include safe metadata such as `tokenSaved`, `profile`, and `configPath`; they do not include the bearer token value.
+
 ## Quick reference
 
 ```bash
@@ -69,13 +72,14 @@ filter feed list --read unread         # Unread feed items
 filter feed reader --id 1234           # Read an article (preview)
 filter feed reader --id 1234 --full    # Read an article (full)
 filter feed save --id 1234 --confirm   # Save to library
-filter highlights list --id 1234       # Highlights for a feed item
+filter feed tags --id 1234 --tag AI --confirm
+filter highlights list --topic AI      # Highlights by topic
 filter sources list                    # Connected sources
-filter sources create --type rss --url https://...
-filter library list                    # Saved articles
+filter sources create --source rss --feed-url https://... --confirm
+filter library add --id 1234 --confirm # Add a feed item to the library
 filter views list                      # Custom views
 filter reports list                    # Generated reports
-filter ai chat --message "..."         # Chat with the assistant
+filter ai web-search --query "latest AI news"
 ```
 
 Run `filter <command> --help` for full options on any command.
@@ -157,13 +161,29 @@ Agents (Claude Code, Cursor, custom scripts) can call the CLI directly — no MC
 ```bash
 git clone https://github.com/cbelling/filter-cli
 cd filter-cli
-node src/index.js catalog
+npm ci
 npm test
+node src/index.js catalog
+npm pack --dry-run
 ```
 
 The CLI ships a frozen `openapi.json` that defines its public surface. The spec is trimmed to only the operations the CLI uses — endpoints not surfaced by any command are not included.
 
 To regenerate the spec against an updated API, run `scripts/build-spec.js` with a source spec on stdin or via `--source <path>`. The script fails if the source is missing any operation the CLI references.
+
+## Releases
+
+Releases are published from `main` by pushing a version tag after the matching version bump has landed.
+
+```bash
+git checkout main
+git pull
+npm test
+git tag v0.1.2
+git push origin v0.1.2
+```
+
+The GitHub Actions release workflow publishes only on `v*` tags and verifies that the tag name matches `package.json` before running `npm publish`. Use npm Trusted Publishing for the package rather than long-lived npm tokens.
 
 ## License
 

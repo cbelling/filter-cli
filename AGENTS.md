@@ -60,8 +60,8 @@ The release flow is:
 git checkout main
 git pull
 npm test
-npm version patch
-git push origin main --tags
+git tag vX.Y.Z
+git push origin vX.Y.Z
 ```
 
 Use the appropriate semver bump:
@@ -70,7 +70,9 @@ Use the appropriate semver bump:
 - `npm version minor` for backward-compatible CLI additions
 - `npm version major` for breaking command/output changes
 
-Tags should use npm's default `vX.Y.Z` format. The publish workflow in `.github/workflows/release.yml` triggers from `v*` tags and verifies that the tag matches `package.json` before publishing.
+Tags should use npm's `vX.Y.Z` format. The publish workflow in `.github/workflows/release.yml` triggers from `v*` tags and verifies that the tag matches `package.json` before publishing.
+
+Do not use `git push --tags` for releases. Push only the intended version tag so old local tags cannot accidentally trigger release workflows.
 
 ## npm Publishing
 
