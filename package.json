@@ -1,6 +1,6 @@
 {
   "name": "filter-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Command-line client for the Filter API. Lets agents and scripts query and mutate a user's Filter account over HTTP.",
   "license": "MIT",
   "author": "Austin Bellinger",
@@ -11,6 +11,7 @@
   "homepage": "https://getfilter.ai/docs/cli",
   "bugs": "https://github.com/cbelling/filter-cli/issues",
   "type": "commonjs",
+  "packageManager": "npm@11.5.1",
   "main": "src/index.js",
   "bin": {
     "filter": "src/index.js"
@@ -22,7 +23,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node --test test/**/*.test.js",
+    "test": "node --test test/*.test.js",
     "start": "node src/index.js"
   },
   "engines": {
