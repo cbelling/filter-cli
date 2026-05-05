@@ -10,6 +10,15 @@ function settingsUrl(baseUrl) {
   return `${trimmed}/settings/api-keys`;
 }
 
+function tokenSavedPayload(saved, extra = {}) {
+  return {
+    tokenSaved: true,
+    profile: saved.profileName,
+    configPath: saved.configPath,
+    ...extra,
+  };
+}
+
 async function loginWithToken({ context, token }) {
   const validated = requireString(token, 'token');
   if (validated.length < TOKEN_MIN_LENGTH) {
@@ -34,12 +43,9 @@ async function loginWithToken({ context, token }) {
 
   return {
     status: 'authenticated',
-    data: {
-      token: validated,
+    data: tokenSavedPayload(saved, {
       user: response.payload?.user || null,
-      profile: saved.profileName,
-      configPath: saved.configPath,
-    },
+    }),
   };
 }
 
@@ -68,19 +74,17 @@ async function loginWithPassword({ context, values }) {
 
   return {
     status: 'authenticated',
-    data: {
-      token,
+    data: tokenSavedPayload(saved, {
       expiresAt: payload.expiresAt || null,
       user: payload.user || null,
-      profile: saved.profileName,
-      configPath: saved.configPath,
-    },
+    }),
   };
 }
 
 module.exports = [
   {
     path: ['auth', 'login'],
+    operationIds: ['getAuthUser', 'loginApiToken'],
     description: 'Authenticate the CLI. Prompts for a token by default; --token or --email/--password also supported.',
     safety: 'auto',
     usage: 'filter auth login [--token <token>] [--email <email> --password <password>] [--device-name <name>] [--platform <platform>]',
@@ -116,8 +120,11 @@ module.exports = [
 
       // Default: interactive token prompt. The blessed flow.
       const url = settingsUrl(context.runtime.baseUrl);
-      process.stderr.write(`\nOpen ${url} to generate a token, then paste it here.\n`);
-      const pasted = await prompt('Token: ');
+      context.stderr.write(`\nOpen ${url} to generate a token, then paste it here.\n`);
+      const pasted = await prompt('Token: ', {
+        input: context.stdin,
+        stream: context.stderr,
+      });
       return loginWithToken({ context, token: pasted });
     },
   },
@@ -167,12 +174,9 @@ module.exports = [
 
       return {
         status: 'refreshed',
-        data: {
-          token,
+        data: tokenSavedPayload(saved, {
           expiresAt: payload.expiresAt || null,
-          profile: saved.profileName,
-          configPath: saved.configPath,
-        },
+        }),
       };
     },
   },
@@ -228,11 +232,9 @@ module.exports = [
 
       return {
         status: 'saved',
-        data: {
-          profile: saved.profileName,
+        data: tokenSavedPayload(saved, {
           baseUrl: saved.profile.baseUrl,
-          configPath: saved.configPath,
-        },
+        }),
       };
     },
   },

@@ -3,6 +3,7 @@ const {
   option,
   parseInteger,
   parseIntegerList,
+  parseOptionalInteger,
   requireString,
 } = require('../helpers');
 
@@ -108,7 +109,7 @@ module.exports = [
         request: {
           path: { id: viewId },
           query: {
-            page: values.page,
+            page: parseOptionalInteger(values.page, 'page'),
             sort: values.sort,
             q: values.q,
             read: values.read,

@@ -133,6 +133,7 @@ function createPendingConfirmationEnvelope(command, flags, argv) {
 }
 
 async function run(argv = process.argv.slice(2), io = {}) {
+  const stdin = io.stdin || process.stdin;
   const stdout = io.stdout || process.stdout;
   const stderr = io.stderr || process.stderr;
   const env = io.env || process.env;
@@ -195,6 +196,9 @@ async function run(argv = process.argv.slice(2), io = {}) {
     const context = {
       env,
       flags,
+      stdin,
+      stdout,
+      stderr,
       runtime,
       catalog: getCatalogEntries(),
     };
