@@ -31,6 +31,27 @@ function parseInteger(value, label) {
   return parsed;
 }
 
+function parseOptionalInteger(value, label) {
+  if (value === undefined || value === null || value === '') return undefined;
+  return parseInteger(value, label);
+}
+
+function parseIntegerRange(value, label, { min = 1, max = Number.MAX_SAFE_INTEGER } = {}) {
+  const parsed = parseInteger(value, label);
+  if (parsed < min || parsed > max) {
+    throw new CliError(`${label} must be an integer between ${min} and ${max}.`, {
+      code: 'validation',
+      exitCode: 2,
+    });
+  }
+  return parsed;
+}
+
+function parseOptionalIntegerRange(value, label, bounds) {
+  if (value === undefined || value === null || value === '') return undefined;
+  return parseIntegerRange(value, label, bounds);
+}
+
 function parseIntegerList(values, label) {
   const list = Array.isArray(values) ? values : values ? [values] : [];
   return list.map((value) => parseInteger(value, label));
@@ -93,8 +114,11 @@ module.exports = {
   ensureOneOf,
   option,
   parseInteger,
+  parseIntegerRange,
   parseIntegerList,
   parseJsonObject,
+  parseOptionalInteger,
+  parseOptionalIntegerRange,
   requireString,
   truncateText,
 };

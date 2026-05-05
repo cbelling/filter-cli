@@ -1,5 +1,5 @@
 const { callOperation } = require('../client');
-const { option, requireString } = require('../helpers');
+const { option, parseOptionalIntegerRange, requireString } = require('../helpers');
 
 module.exports = [
   {
@@ -91,7 +91,7 @@ module.exports = [
             query: requireString(values.query, 'query'),
             allowedDomains: Array.isArray(values['allowed-domain']) ? values['allowed-domain'] : undefined,
             blockedDomains: Array.isArray(values['blocked-domain']) ? values['blocked-domain'] : undefined,
-            maxUses: values['max-uses'] ? Number(values['max-uses']) : undefined,
+            maxUses: parseOptionalIntegerRange(values['max-uses'], 'max-uses', { min: 1, max: 8 }),
           },
         },
       });

@@ -3,6 +3,7 @@ const {
   option,
   parseInteger,
   parseIntegerList,
+  parseOptionalInteger,
   requireString,
   truncateText,
 } = require('../helpers');
@@ -41,8 +42,8 @@ module.exports = [
         context: context.runtime,
         request: {
           query: {
-            page: values.page,
-            viewId: values['view-id'],
+            page: parseOptionalInteger(values.page, 'page'),
+            viewId: parseOptionalInteger(values['view-id'], 'view-id'),
             status: values.status,
             reportType: values['report-type'],
           },

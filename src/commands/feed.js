@@ -4,6 +4,7 @@ const {
   option,
   requireString,
   parseInteger,
+  parseOptionalInteger,
   truncateText,
 } = require('../helpers');
 
@@ -83,8 +84,8 @@ module.exports = [
         context: context.runtime,
         request: {
           query: {
-            page: values.page,
-            perPage: values['per-page'],
+            page: parseOptionalInteger(values.page, 'page'),
+            perPage: parseOptionalInteger(values['per-page'], 'per-page'),
             source: values.source,
             read: values.read,
             state: values.state,
@@ -92,7 +93,7 @@ module.exports = [
             q: values.q,
             from: values.from,
             to: values.to,
-            connectorId: values['connector-id'],
+            connectorId: parseOptionalInteger(values['connector-id'], 'connector-id'),
           },
         },
       });
