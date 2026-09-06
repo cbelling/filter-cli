@@ -36,7 +36,9 @@ function parseOptionalInteger(value, label) {
   return parseInteger(value, label);
 }
 
-function parseIntegerRange(value, label, { min = 1, max = Number.MAX_SAFE_INTEGER } = {}) {
+function parseOptionalIntegerRange(value, label, bounds = {}) {
+  if (value === undefined || value === null || value === '') return undefined;
+  const { min = 1, max = Number.MAX_SAFE_INTEGER } = bounds;
   const parsed = parseInteger(value, label);
   if (parsed < min || parsed > max) {
     throw new CliError(`${label} must be an integer between ${min} and ${max}.`, {
@@ -47,30 +49,9 @@ function parseIntegerRange(value, label, { min = 1, max = Number.MAX_SAFE_INTEGE
   return parsed;
 }
 
-function parseOptionalIntegerRange(value, label, bounds) {
-  if (value === undefined || value === null || value === '') return undefined;
-  return parseIntegerRange(value, label, bounds);
-}
-
 function parseIntegerList(values, label) {
   const list = Array.isArray(values) ? values : values ? [values] : [];
   return list.map((value) => parseInteger(value, label));
-}
-
-function parseJsonObject(value, label) {
-  if (!value) return undefined;
-  try {
-    const parsed = JSON.parse(value);
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      throw new Error('JSON value must be an object.');
-    }
-    return parsed;
-  } catch (error) {
-    throw new CliError(`${label} must be valid JSON. ${String(error.message || '').trim()}`.trim(), {
-      code: 'validation',
-      exitCode: 2,
-    });
-  }
 }
 
 function ensureOneOf(values, keys, message) {
@@ -104,19 +85,12 @@ function truncateText(value, limit) {
   };
 }
 
-function dedupeStrings(values) {
-  return [...new Set((Array.isArray(values) ? values : []).map((value) => cleanString(value)).filter(Boolean))];
-}
-
 module.exports = {
   cleanString,
-  dedupeStrings,
   ensureOneOf,
   option,
   parseInteger,
-  parseIntegerRange,
   parseIntegerList,
-  parseJsonObject,
   parseOptionalInteger,
   parseOptionalIntegerRange,
   requireString,

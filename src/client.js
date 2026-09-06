@@ -64,10 +64,6 @@ function loadOperationMap(env = process.env) {
   return operationMap;
 }
 
-function listOperations(env = process.env) {
-  return [...loadOperationMap(env).values()];
-}
-
 function getOperation(operationId, env = process.env) {
   const operation = loadOperationMap(env).get(operationId);
   if (!operation) {
@@ -239,6 +235,4 @@ module.exports = {
   CliError,
   DEFAULT_TIMEOUT_MS,
   callOperation,
-  getOperation,
-  listOperations,
 };
